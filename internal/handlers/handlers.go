@@ -1,19 +1,3 @@
-package handlers
-
-import (
-	"io"
-	"net/http"
-	"os"
-	"path/filepath"
-	"time"
-
-	"github.com/Yandex-Practicum/go1fl-sprint6-final/internal/service"
-)
-
-func IndexHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "index.html")
-}
-
 func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(10 << 20)
 	if err != nil {
@@ -21,9 +5,23 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	file, header, err := r.FormFile("file")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	var file multipart.File
+	var header *multipart.FileHeader
+
+	for _, files := range r.MultipartForm.File {
+		if len(files) > 0 {
+			header = files[0]
+			file, err = header.Open()
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			break
+		}
+	}
+
+	if file == nil {
+		http.Error(w, "file not found", http.StatusInternalServerError)
 		return
 	}
 	defer file.Close()
