@@ -1,3 +1,20 @@
+package handlers
+
+import (
+	"io"
+	"mime/multipart"
+	"net/http"
+	"os"
+	"path/filepath"
+	"time"
+
+	"github.com/Yandex-Practicum/go1fl-sprint6-final/internal/service"
+)
+
+func IndexHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "index.html")
+}
+
 func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(10 << 20)
 	if err != nil {
@@ -11,11 +28,13 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	for _, files := range r.MultipartForm.File {
 		if len(files) > 0 {
 			header = files[0]
+
 			file, err = header.Open()
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
+
 			break
 		}
 	}
@@ -39,7 +58,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ext := filepath.Ext(header.Filename)
-	filename := time.Now().UTC().Format("20060102150405") + ext
+	filename := time.Now().UTC().String() + ext
 
 	err = os.WriteFile(filename, []byte(result), 0644)
 	if err != nil {
@@ -48,5 +67,9 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(result))
+
+	_, err = w.Write([]byte(result))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
