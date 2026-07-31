@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"io"
-	"mime/multipart"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -16,60 +15,46 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func UploadHandler(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseMultipartForm(10 << 20)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	var file multipart.File
-	var header *multipart.FileHeader
-
-	for _, files := range r.MultipartForm.File {
-		if len(files) > 0 {
-			header = files[0]
-
-			file, err = header.Open()
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-
-			break
-		}
-	}
-
-	if file == nil {
-		http.Error(w, "file not found", http.StatusInternalServerError)
+	file, header, err := r.FormFile("myFile")
+	if err != nil {
+		http.Error(w, "failed to read uploaded file", http.StatusBadRequest)
 		return
 	}
 	defer file.Close()
 
 	data, err := io.ReadAll(file)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "failed to read file contents", http.StatusInternalServerError)
 		return
 	}
 
 	result, err := service.Convert(string(data))
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	ext := filepath.Ext(header.Filename)
-	filename := time.Now().UTC().String() + ext
+	if ext == "" {
+		ext = ".txt"
+	}
 
-	err = os.WriteFile(filename, []byte(result), 0644)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	filename := "converted-" +
+		time.Now().UTC().Format("20060102-150405.000000000") +
+		ext
+
+	if err := os.WriteFile(filename, []byte(result), 0644); err != nil {
+		http.Error(w, "failed to save converted file", http.StatusInternalServerError)
 		return
 	}
 
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
-	_, err = w.Write([]byte(result))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+	_, _ = w.Write([]byte(result))
 }

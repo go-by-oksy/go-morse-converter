@@ -1,0 +1,10 @@
+# Generated conversion results
+converted-*
+
+# IDE settings
+.vscode/
+.idea/
+
+# Operating system files
+.DS_Store
+Thumbs.db
