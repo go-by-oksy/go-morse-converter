@@ -4,18 +4,37 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/Yandex-Practicum/go1fl-sprint6-final/pkg/morse"
+	"github.com/go-by-oksy/go-morse-converter/pkg/morse"
 )
+
+var ErrEmptyData = errors.New("empty data")
 
 func Convert(data string) (string, error) {
 	data = strings.TrimSpace(data)
 	if data == "" {
-		return "", errors.New("empty data")
+		return "", ErrEmptyData
 	}
 
-	if strings.ContainsAny(data, ".-") {
+	if isMorse(data) {
 		return morse.ToText(data), nil
 	}
 
 	return morse.ToMorse(data), nil
+}
+
+func isMorse(data string) bool {
+	hasSignal := false
+
+	for _, char := range data {
+		switch char {
+		case '.', '-':
+			hasSignal = true
+		case ' ', '\t', '\r', '\n':
+			// Separators are valid in Morse input.
+		default:
+			return false
+		}
+	}
+
+	return hasSignal
 }

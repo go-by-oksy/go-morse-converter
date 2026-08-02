@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Yandex-Practicum/go1fl-sprint6-final/internal/handlers"
+	"github.com/go-by-oksy/go-morse-converter/internal/handlers"
 )
 
 type Server struct {

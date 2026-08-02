@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/Yandex-Practicum/go1fl-sprint6-final/internal/server"
+	"github.com/go-by-oksy/go-morse-converter/internal/server"
 )
 
 func main() {

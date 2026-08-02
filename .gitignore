@@ -8,3 +8,9 @@ converted-*
 # Operating system files
 .DS_Store
 Thumbs.db
+
+# Build outputs
+cmd
+cmd.exe
+go-morse-converter
+go-morse-converter.exe
