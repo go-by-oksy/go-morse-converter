@@ -4,6 +4,16 @@ A small web application that converts Russian text to Morse code and Morse code 
 
 The application accepts a text file through a web form, detects the input format, performs the conversion, displays the result in the browser, and saves it as a generated file.
 
+## Preview
+
+### Upload Page
+
+![Go Morse Converter upload page](docs/images/upload-page.png)
+
+### Conversion Result
+
+![Go Morse Converter result page](docs/images/result-page.png)
+
 ## Features
 
 - Upload text files through a web interface
@@ -15,6 +25,8 @@ The application accepts a text file through a web form, detects the input format
 - Save converted results with cross-platform filenames
 - Unit tests for the conversion service
 - Automated formatting, testing and build checks with GitHub Actions
+- Display converted content on a styled result page
+- Copy the converted result to the clipboard
 
 ## Tech Stack
 
@@ -40,6 +52,8 @@ The project uses only the Go standard library and does not require third-party d
 ├── pkg
 │   └── morse           # Morse encoding and decoding
 ├── index.html          # Upload form
+├── index.html          # File upload page
+├── result.html         # Conversion result template
 ├── go.mod
 └── README.md
 ```
