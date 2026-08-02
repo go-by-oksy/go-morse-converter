@@ -1,0 +1,16 @@
+# Generated conversion results
+converted-*
+
+# IDE settings
+.vscode/
+.idea/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Build outputs
+cmd
+cmd.exe
+go-morse-converter
+go-morse-converter.exe
