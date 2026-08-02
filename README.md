@@ -51,7 +51,6 @@ The project uses only the Go standard library and does not require third-party d
 │   └── service         # Conversion direction detection
 ├── pkg
 │   └── morse           # Morse encoding and decoding
-├── index.html          # Upload form
 ├── index.html          # File upload page
 ├── result.html         # Conversion result template
 ├── go.mod
