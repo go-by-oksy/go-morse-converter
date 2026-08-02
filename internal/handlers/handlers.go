@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"html/template"
 	"io"
 	"net/http"
 	"os"
@@ -53,8 +54,23 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
+	tmpl, err := template.ParseFiles("result.html")
+	if err != nil {
+		http.Error(w, "failed to load result page", http.StatusInternalServerError)
+		return
+	}
 
-	_, _ = w.Write([]byte(result))
+	pageData := struct {
+		Result   string
+		Filename string
+	}{
+		Result:   result,
+		Filename: filename,
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+	if err := tmpl.Execute(w, pageData); err != nil {
+		http.Error(w, "failed to render result page", http.StatusInternalServerError)
+	}
 }
